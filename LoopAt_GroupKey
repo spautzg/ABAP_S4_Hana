@@ -1,0 +1,45 @@
+*&---------------------------------------------------------------------*
+*& Report ZTESTE_MVGSPAUTZ
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zteste_mvgspautz.
+
+***Group key binding
+TYPES: BEGIN OF y_order,
+         vbeln TYPE vbak-vbeln,
+         kunnr TYPE vbak-kunnr,
+         netwr TYPE vbak-netwr,
+       END OF y_order,
+       y_t_order TYPE SORTED TABLE OF y_order WITH NON-UNIQUE KEY vbeln.
+
+
+DATA(t_order) = VALUE y_t_order(
+  ( vbeln = '1001' kunnr = '10' netwr = '500' )
+  ( vbeln = '1002' kunnr = '10' netwr = '400' )
+  ( vbeln = '1003' kunnr = '20' netwr = '300' )
+  ( vbeln = '1004' kunnr = '20' netwr = '600' )
+  ( vbeln = '1005' kunnr = '10' netwr = '100' )
+  ).
+
+LOOP AT t_order INTO DATA(s_wa1)
+  GROUP BY s_wa1-kunnr
+  INTO DATA(kunnr_key).
+
+  WRITE: /
+  |Cliente: { kunnr_key }|.
+
+  LOOP AT GROUP kunnr_key INTO DATA(s_order).
+    WRITE: /
+    |   Ordem: { s_order-vbeln }, Velor: { s_order-netwr }|.
+  ENDLOOP.
+
+  WRITE:/
+  | Total do cliente: {
+  REDUCE vbak-netwr(
+   INIT tot = 0
+   FOR ls_order IN GROUP kunnr_key
+   NEXT tot += ls_order-netwr
+   )
+   }|,/.
+ENDLOOP.
