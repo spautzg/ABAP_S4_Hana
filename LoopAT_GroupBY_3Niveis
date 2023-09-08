@@ -1,0 +1,71 @@
+*&---------------------------------------------------------------------*
+*& Report ZTESTE_MVGSPAUTZ
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zteste_mvgspautz.
+
+** 3 níveis
+TYPES: BEGIN OF y_order,
+         vbeln TYPE vbak-vbeln,
+         posnr TYPE vbap-posnr,
+         kunnr TYPE vbak-kunnr,
+         netwr TYPE vbak-netwr,
+       END OF y_order,
+       y_t_order TYPE STANDARD TABLE OF y_order WITH KEY primary_key COMPONENTS vbeln.
+
+
+DATA(t_order) = VALUE y_t_order(
+  ( vbeln = '1001' posnr = '00001' kunnr = '10' netwr = '300' )
+  ( vbeln = '1001' posnr = '00002' kunnr = '10' netwr = '100' )
+  ( vbeln = '1001' posnr = '00003' kunnr = '10' netwr = '100' )
+  ( vbeln = '1002' posnr = '00001' kunnr = '10' netwr = '400' )
+  ( vbeln = '1003' posnr = '00001' kunnr = '20' netwr = '300' )
+  ( vbeln = '1004' posnr = '00001' kunnr = '20' netwr = '200' )
+  ( vbeln = '1004' posnr = '00002' kunnr = '20' netwr = '400' )
+  ( vbeln = '1005' posnr = '00001' kunnr = '10' netwr = '100' )
+  ).
+SORT t_order BY kunnr vbeln posnr.
+
+LOOP AT t_order INTO DATA(s_wa1) "nivel 1: cliente
+  GROUP BY (
+    kunnr = s_wa1-kunnr
+  )
+  INTO DATA(s_key1).
+
+  WRITE: /
+  |Cliente: { s_key1-kunnr }|.
+
+  LOOP AT GROUP s_key1 INTO DATA(s_wa2) "nivel 2: ordem
+  GROUP BY (
+    vbeln = s_wa2-vbeln
+  )
+  INTO DATA(s_key2).
+
+    WRITE: /
+    |Ordem: { s_key2-vbeln }|.
+
+    LOOP AT GROUP s_key2 INTO DATA(s_wa3). "nivel 3: item
+      WRITE: /
+      |Item: { s_wa3-posnr }, Valor: { s_wa3-netwr }|.
+    ENDLOOP.
+
+    WRITE:/
+    | Total da ordem: {
+    REDUCE vbak-netwr(
+     INIT tot = 0
+     FOR ls_order IN GROUP s_key2
+     NEXT tot += ls_order-netwr
+     )
+     }|,/.
+  ENDLOOP.
+
+  WRITE:/
+  | Total do cliente: {
+  REDUCE vbak-netwr(
+   INIT tot = 0
+   FOR ls_order IN GROUP s_key1
+   NEXT tot += ls_order-netwr
+   )
+   }|,/.
+ENDLOOP.
