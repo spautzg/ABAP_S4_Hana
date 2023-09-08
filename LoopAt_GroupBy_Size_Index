@@ -1,0 +1,38 @@
+*&---------------------------------------------------------------------*
+*& Report ZTESTE_MVGSPAUTZ
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zteste_mvgspautz.
+
+***Expressões GROUP SIZE e GROUP INDEX
+TYPES: BEGIN OF y_order,
+         vbeln TYPE vbak-vbeln,
+         kunnr TYPE vbak-kunnr,
+         netwr TYPE vbak-netwr,
+       END OF y_order,
+       y_t_order TYPE SORTED TABLE OF y_order WITH NON-UNIQUE KEY vbeln.
+
+
+DATA(t_order) = VALUE y_t_order(
+  ( vbeln = '1001' kunnr = '10' netwr = '500' )
+  ( vbeln = '1002' kunnr = '10' netwr = '400' )
+  ( vbeln = '1003' kunnr = '20' netwr = '300' )
+  ( vbeln = '1004' kunnr = '20' netwr = '600' )
+  ( vbeln = '1005' kunnr = '10' netwr = '100' )
+  ).
+
+LOOP AT t_order INTO DATA(s_wa1)
+  GROUP BY (
+  kunnr = s_wa1-kunnr
+  index = GROUP INDEX
+  size  = GROUP SIZE
+  )
+  INTO DATA(s_key1).
+
+  WRITE: /
+    |Cliente: { s_key1-kunnr }, |
+    && | Index: { s_key1-index }, |
+    && | size:  { s_key1-size } |.
+
+ENDLOOP.
