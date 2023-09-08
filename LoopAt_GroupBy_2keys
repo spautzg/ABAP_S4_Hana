@@ -1,0 +1,38 @@
+*&---------------------------------------------------------------------*
+*& Report ZTESTE_MVGSPAUTZ
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zteste_mvgspautz.
+
+****Group by 2 campos
+TYPES: BEGIN OF y_order,
+         vbeln TYPE vbak-vbeln,
+         vkorg TYPE vbak-vkorg,
+         kunnr TYPE vbak-kunnr,
+         netwr TYPE vbak-netwr,
+       END OF y_order,
+       y_t_order TYPE STANDARD TABLE OF y_order WITH KEY primary_key COMPONENTS vbeln.
+
+
+DATA(t_order) = VALUE y_t_order(
+  ( vbeln = '1001' vkorg = 'A' kunnr = '10' netwr = '500' )
+  ( vbeln = '1002' vkorg = 'A' kunnr = '40' netwr = '400' )
+  ( vbeln = '1003' vkorg = 'B' kunnr = '20' netwr = '300' )
+  ( vbeln = '1004' vkorg = 'B' kunnr = '20' netwr = '600' )
+  ( vbeln = '1005' vkorg = 'A' kunnr = '30' netwr = '100' )
+  ( vbeln = '1006' vkorg = 'A' kunnr = '30' netwr = '100' )
+  ).
+SORT t_order BY vkorg kunnr vbeln.
+
+LOOP AT t_order INTO DATA(s_wa1)
+  GROUP BY (
+    vkorg = s_wa1-vkorg
+    kunnr = s_wa1-kunnr
+  )
+  INTO DATA(s_key1).
+
+  WRITE: /
+  |VKORG: { s_key1-vkorg },| && |KUNNR: { s_key1-kunnr }|.
+
+ENDLOOP.
