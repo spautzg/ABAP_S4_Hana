@@ -1,0 +1,64 @@
+*&---------------------------------------------------------------------*
+*& Report ZTESTE_MVGSPAUTZ
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zteste_mvgspautz.
+
+
+*_________________MESHES_____________________________________________________________*
+
+TYPES: BEGIN OF y_cidade,
+         cod    TYPE i,
+         nome   TYPE char20,
+         estado TYPE char2,
+       END OF y_cidade,
+       y_t_cidade TYPE STANDARD TABLE OF y_cidade WITH KEY primary_key COMPONENTS cod,
+
+       BEGIN OF y_estado,
+         cod  TYPE char2,
+         nome TYPE char20,
+       END OF y_estado,
+       y_t_estado TYPE STANDARD TABLE OF y_estado WITH KEY primary_key COMPONENTS cod,
+
+       BEGIN OF MESH y_uf,
+         estados TYPE y_t_estado
+                   ASSOCIATION _cidades TO cidades
+                   ON  estado = cod,
+         cidades TYPE y_t_cidade
+                   ASSOCIATION _estado TO estados
+                   ON cod = estado,
+       END OF MESH y_uf.
+
+DATA(t_uf) = VALUE y_uf(
+  estados = VALUE y_t_estado(
+    ( cod = 'SP' nome = 'São Paulo' )
+    ( cod = 'RJ' nome = 'Rio de Janeiro' )
+    )
+    cidades = VALUE y_t_cidade(
+    ( cod = '01' nome = 'Santo André' estado = 'SP' )
+    ( cod = '02' nome = 'São Bernardo do Campo' estado = 'SP' )
+    ( cod = '03' nome = 'Santo André' estado = 'SP' )
+    ( cod = '04' nome = 'Petrópólis' estado = 'RJ' )
+    ( cod = '04' nome = 'Niterói' estado = 'RJ' )
+   )
+).
+
+WRITE:
+  /  |Estado de Santo André:  |
+  &&  | { t_uf-cidades\_estado[ t_uf-cidades[ cod = '01' ] ]-nome }|.
+
+WRITE:
+/ |Cidades do Rio:|.
+LOOP AT t_uf-estados\_cidades[ t_uf-estados[ cod = 'RJ' ] ] INTO DATA(s_cid_rj).
+  WRITE:
+  / | { s_cid_rj-nome }|.
+ENDLOOP.
+
+WRITE:
+  / |Cidades do Rio (com estado):|.
+LOOP AT t_uf-estados\_cidades[ t_uf-estados[ cod = 'RJ' ] ] INTO DATA(s_cids_rj).
+  WRITE:
+  / | { s_cids_rj-nome }, |
+  && | { t_uf-cidades\_estado[ s_cids_rj ]-nome }|.
+ENDLOOP.
