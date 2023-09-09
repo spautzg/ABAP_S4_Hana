@@ -1,0 +1,105 @@
+***______________________Filters______________________________***
+TYPES: BEGIN OF y_kna1,
+         kunnr TYPE kna1-kunnr,
+         name1 TYPE kna1-name1,
+       END OF y_kna1,
+       y_t_kna1 TYPE SORTED TABLE OF y_kna1 WITH NON-UNIQUE KEY kunnr
+                                            WITH NON-UNIQUE SORTED KEY name1 COMPONENTS name1.
+
+DATA t_filter TYPE SORTED TABLE OF y_kna1-kunnr WITH UNIQUE KEY table_line.
+
+DATA(t_kna1) = VALUE y_t_kna1(
+  ( kunnr = '0000000010' name1 = 'Cliente dez' )
+  ( kunnr = '0000000020' name1 = 'Cliente vinte' )
+  ( kunnr = '0000000030' name1 = 'Cliente trinta' )
+  ).
+
+DATA(t_20e30) =
+ FILTER #(
+   t_kna1 USING KEY name1
+   WHERE name1 NE CONV #( 'Cliente dez' )
+   ).
+
+cl_demo_output=>write_data( t_kna1 ).
+cl_demo_output=>write_data( t_20e30 ).
+cl_demo_output=>display( ).
+
+**TYPES: BEGIN OF y_kna1,
+**         kunnr TYPE kna1-kunnr,
+**         name1 TYPE kna1-name1,
+**       END OF y_kna1,
+**       y_t_kna1 TYPE SORTED TABLE OF y_kna1 WITH NON-UNIQUE KEY kunnr.
+**
+**DATA t_filter TYPE SORTED TABLE OF y_kna1-kunnr WITH UNIQUE KEY table_line.
+**
+**DATA(t_kna1) = VALUE y_t_kna1(
+**  ( kunnr = '0000000010' name1 = 'Cliente dez' )
+**  ( kunnr = '0000000020' name1 = 'Cliente vinte' )
+**  ( kunnr = '0000000030' name1 = 'Cliente trinta' )
+**  ).
+**
+**t_filter = VALUE #(
+** ( '0000000010' )
+** ).
+**
+**DATA(t_20e30) =
+** FILTER #(
+**   t_kna1 EXCEPT IN t_filter
+**   WHERE kunnr EQ table_line
+**   ).
+**
+**cl_demo_output=>write_data( t_kna1 ).
+**cl_demo_output=>write_data( t_20e30 ).
+**cl_demo_output=>display( ).
+
+***_________________________________________________________________***
+
+**TYPES: BEGIN OF y_kna1,
+**         kunnr TYPE kna1-kunnr,
+**         name1 TYPE kna1-name1,
+**       END OF y_kna1,
+**       y_t_kna1 TYPE SORTED TABLE OF y_kna1 WITH NON-UNIQUE KEY kunnr.
+**
+**DATA t_filter TYPE SORTED TABLE OF y_kna1-kunnr WITH UNIQUE KEY table_line.
+**
+**DATA(t_kna1) = VALUE y_t_kna1(
+**  ( kunnr = '0000000010' name1 = 'Cliente dez' )
+**  ( kunnr = '0000000020' name1 = 'Cliente vinte' )
+**  ( kunnr = '0000000030' name1 = 'Cliente trinta' )
+**  ).
+**
+**t_filter = VALUE #(
+** ( '0000000020' )
+** ( '0000000030' )
+** ).
+**
+**DATA(t_20e30) =
+** FILTER #(
+**   t_kna1 IN t_filter
+**   WHERE kunnr EQ table_line
+**   ).
+**
+**cl_demo_output=>write_data( t_kna1 ).
+**cl_demo_output=>write_data( t_20e30 ).
+**cl_demo_output=>display( ).
+
+***___________________________________________________________________***
+*TYPES: BEGIN OF y_kna1,
+*         kunnr TYPE kna1-kunnr,
+*         name1 TYPE kna1-name1,
+*       END OF y_kna1,
+*       y_t_kna1 TYPE SORTED TABLE OF y_kna1 WITH NON-UNIQUE KEY kunnr.
+*
+*DATA(t_kna1) = VALUE y_t_kna1(
+*  ( kunnr = '0000000010' name1 = 'Cliente dez' )
+*  ( kunnr = '0000000020' name1 = 'Cliente vinte' )
+*  ( kunnr = '0000000030' name1 = 'Cliente trinta' )
+*  ).
+*
+*DATA(t_20e30) =
+*  FILTER #(
+*    t_kna1
+*    WHERE kunnr NE '0000000010'
+*    ).
+*
+*BREAK-POINT.
