@@ -1,0 +1,18 @@
+TABLES: kna1, vbap.
+
+SELECT SINGLE
+  ( name1 && name2 ) AS namefull
+  INTO @DATA(s_kunnr)
+  FROM kna1
+  WHERE kunnr = '0001000000'.
+
+SELECT SINGLE
+  ( kzwi1 + kzwi1 ) AS kswi
+  INTO @DATA(s_vbap)
+  FROM vbap
+  WHERE vbeln = '0000000010'
+  AND   posnr = '00010'.
+
+cl_demo_output=>write_data( s_kunnr ).
+cl_demo_output=>write_data( s_vbap ).
+cl_demo_output=>display( ).
