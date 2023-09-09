@@ -1,0 +1,70 @@
+REPORT zteste_mvgspautz.
+
+cl_demo_output=>display(
+  CONV string(
+    LET v_natal = CONV sydatum( '20301225' ) IN
+    |{
+      CONV string(
+        LET v_br = CONV land1( 'BR' ) IN
+        |{ v_br }:{ v_natal COUNTRY = v_br }|
+        )
+       }|
+       && |\n| &&
+       |{
+         CONV string(
+          LET v_us = CONV land1( 'US' ) IN
+          |{ v_us }:{ v_natal COUNTRY  = v_us }|
+         )
+        }|
+       )
+      ).
+
+*______________________________________________________________________*
+DATA(v_natal) = CONV sydatum( '20301225' ).
+DATA(V_br) = CONV land1( 'BR' ).
+DATA(V_us) = CONV land1( 'US' ).
+
+DATA(v_dates) =
+  |{ v_br }: { v_natal COUNTRY = v_br } |
+ && |\n|
+ && |{ v_us }: { v_natal COUNTRY = v_us }|.
+
+cl_demo_output=>display( v_dates ).
+
+*_________________________________________________________________*
+WRITE:
+  |{ 'Hello'   WIDTH = 30 PAD = '.' ALIGN = LEFT } |,
+/ |{ 'Aligned' WIDTH = 30 PAD = '_' ALIGN = CENTER } |,
+/ |{ 'World'   WIDTH = 30 PAD = ';' ALIGN = RIGHT } |.
+
+*__________________________________________________________________*
+cl_demo_output=>display(
+|First line.\r\ttab\ttab\ttab\n\ttab\ttab\ttab\rLast line.| ).
+
+" \R = Return
+" \t = tab
+" \n = line break
+*___________________________________________________________________*
+
+DATA v_palavra TYPE STRing VALUE 'World'.
+
+WRITE |Hello { v_palavra }|.
+
+WRITE / |Hello { 'World' }|.
+
+*_____________________________________________________________________*
+
+WRITE |{ 'Minúsculo' CASE = (cl_abap_format=>c_lower) },|
+&&    |{ 'Maiúsculo' CASE = (cl_abap_format=>c_upper) },|
+&&    |{ 'Normal'    CASE = (cl_abap_format=>c_raw) }|.
+
+*_______________________________________________________________________*
+
+data v_matnr type char40 value '0000000000123'.
+
+write |{ v_matnr ALPHA = OUT }|.
+
+write / |{ v_matnr ALPHA = IN }|.
+
+
+
